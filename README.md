@@ -1,6 +1,14 @@
 # Threat Hunt Report: Unauthorized TOR Usage
 
-## Example Scenario
+
+## Platforms and Languages Leveraged
+
+- **Windows 10 Virtual Machines** (Microsoft Azure)  
+- **EDR Platform:** Microsoft Defender for Endpoint  
+- **Kusto Query Language (KQL)**  
+- **Tor Browser**  
+
+## Scenario
 Management suspects that certain employees may be using the TOR browser to bypass network security controls. Recent network logs reveal unusual encrypted traffic patterns and connections to known TOR entry nodes. Additionally, anonymous reports indicate that employees have discussed accessing restricted websites during work hours.
 
 The objective of this investigation is to detect any TOR usage, analyze related security incidents, and mitigate associated risks. If TOR usage is confirmed, management will be notified immediately.
