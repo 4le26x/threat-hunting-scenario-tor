@@ -1,6 +1,8 @@
 # Threat Hunt Report: Unauthorized TOR Usage
 ![Network Topology](Images/TOR%20Usage.png)
 
+- [Scenario Creation](https://github.com/4le26x/threat-hunting-scenario-tor/blob/main/threat-hunting-scenario-tor-event-creation.md)
+
 ## Platforms and Languages Leveraged
 
 - **Windows 10 Virtual Machines** (Microsoft Azure)  
