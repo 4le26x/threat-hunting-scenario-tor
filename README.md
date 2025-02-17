@@ -1,5 +1,5 @@
 # Threat Hunt Report: Unauthorized TOR Usage
-
+![Network Topology](Images/TOR%20Usage.png)
 
 ## Platforms and Languages Leveraged
 
@@ -20,7 +20,7 @@ The objective of this investigation is to detect any TOR usage, analyze related 
 
 ## Steps Taken
 
-### File Event Analysis
+## 1. File Event Analysis
 A query was executed on the **DeviceFileEvents** table to identify suspicious file activities related to TOR. The investigation found that the user account `employee` downloaded a TOR installer, leading to multiple TOR-related files being copied to the desktop. Additionally, a text file named `tor-shopping-list.txt` was created on the desktop, suggesting possible premeditated TOR usage.
 
 **Timestamp of suspicious activity:** `2025-02-16T20:19:26.4762431Z`
@@ -36,7 +36,10 @@ DeviceFileEvents
 | project Timestamp, DeviceName, ActionType, FileName, FolderPath, SHA256, Account = InitiatingProcessAccountName
 ```
 
-### Process Execution Analysis
+![File Event Analysisy](Images/File%20Event%20Analysis.png)
+
+
+## 2. Process Execution Analysis
 The **DeviceProcessEvents** table was examined to determine whether the TOR browser was installed or executed. It was discovered that, at `2025-02-16T20:19:24.9266039Z`, the user executed a newly downloaded file named `tor-browser-windows-x86_64-portable-14.0.6.exe` from the Downloads folder. The execution used the `/S` parameter, which indicates a **silent installation**.
 
 #### Query Used:
@@ -47,7 +50,29 @@ DeviceProcessEvents
 | project Timestamp, DeviceName, AccountName, ActionType, FileName, FolderPath, ProcessCommandLine, SHA256
 ```
 
-## Network Connection Analysis
+![File Event Analysis](Images/Process%20Execution%20Analysis.png)
+
+
+
+
+## 3. TOR Browser Execution Analysis
+
+Searched for any indication that the user **"employee"** actually opened the TOR browser.Evidence confirms that **tor.exe** was executed at `2025-02-16T20:26:35.0890959Z`. Multiple instances of **firefox.exe (TOR)** and **tor.exe** were spawned afterwards, indicating **active TOR usage**.
+
+### Query used to locate events:
+```kusto
+DeviceProcessEvents  
+| where DeviceName == "aph-treat-lab"  
+| where FileName has_any ("tor.exe", "firefox.exe", "tor-browser.exe")  
+| project Timestamp, DeviceName, AccountName, ActionType, FileName, FolderPath, ProcessCommandLine, SHA256
+| order by Timestamp desc
+```
+
+![TOR Browser Execution Analysis](Images/TOR%20Browser%20Execution%20Analysis.png)
+
+
+
+## 4. Network Connection Analysis
 The **DeviceNetworkEvents** table was analyzed for evidence of **TOR network connections**. At `2025-02-16T20:21:01.2992025Z`, an employee **initiated a network connection** via `firefox.exe` from the **TOR Browser directory**, connecting to `127.0.0.1` on port `9150`, which is **commonly used by TOR for anonymized traffic routing**. 
 
 Additionally, **connections to external sites over port 443 were detected**, indicating potential access to restricted websites.
@@ -61,6 +86,9 @@ DeviceNetworkEvents
 RemoteIP, RemotePort, RemoteUrl, InitiatingProcessFileName, InitiatingProcessFolderPath
 | order by Timestamp desc
 ```
+![Network Connection Analysis](Images/Network%20Connection%20Analysis.png)
+
+
 ## Chronological Event Timeline 
 
 ### 1. File Download - TOR Installer
